@@ -7,17 +7,17 @@ path=$(realpath "${0%/*}")
 
 echo $path
 
-if [[ "$(docker images -q expressjs 2> /dev/null)" == "" ]]
+if [[ "$(docker images -q res/express 2> /dev/null)" == "" ]]
 then
     echo "Image not found. Building it!"
-    docker build --tag expressjs $path
+    docker build --tag res/express $path
 fi
 
-if [[ "$(docker ps -f name=expressjs -q 2>/dev/null)" != "" ]]
+if [[ "$(docker ps -f name="res/express" -q 2>/dev/null)" != "" ]]
 then
     echo "Running container found. Stopping it!"
-    docker stop expressjs &>/dev/null
+    docker stop res-express &>/dev/null
 fi
 
-echo "Running image \"expressjs\"."
-docker run -it -d -p 3000:3000 --name expressjs --rm expressjs
+echo "Running image \"res/express\"."
+docker run -d -p 3000:3000 --name res-express --rm res/express

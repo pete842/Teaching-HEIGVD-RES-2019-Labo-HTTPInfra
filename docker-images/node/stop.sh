@@ -1,9 +1,9 @@
 #! /bin/bash
 
-if [[ "$(docker ps -f name=expressjs -q 2>/dev/null)" != "" ]]
+if [[ "$(docker ps -f name="res-express" -q 2>/dev/null)" != "" ]]
 then
-    echo "Stopping \"expressjs\" container."
-    docker stop expressjs &>/dev/null
+    echo "Stopping \"res-express\" container."
+    docker stop res-express &>/dev/null
 else
-    echo "No container named \"expressjs\" found! Do nothing."
+    echo "No container named \"res-express\" found! Do nothing."
 fi
