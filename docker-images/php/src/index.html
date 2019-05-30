@@ -25,7 +25,7 @@
   <script>
     let on = true;
     function refreshCompanies() {
-      $("#companies-tbody").remove();
+      $("#dataTable > tbody").remove();
       $.getJSON("/api/students/", function (data) {
         var items = [];
         $.each(data, function (key, val) {
@@ -36,7 +36,6 @@
         });
 
         $("<tbody\>", {
-          id: "companies-tbody",
           html: items.join("")
         }).appendTo($("#dataTable"));
       });
