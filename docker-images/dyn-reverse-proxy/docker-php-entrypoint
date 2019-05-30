@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+sed -i "s/\[service_dyn\]/${DYNAMIC_APP}/" /etc/apache2/sites-available/001-reverse-proxy.conf
+sed -i "s/\[service_static\]/${STATIC_APP}/" /etc/apache2/sites-available/001-reverse-proxy.conf
+
+# first arg is `-f` or `--some-option`
+if [ "${1#-}" != "$1" ]; then
+	set -- apache2-foreground "$@"
+fi
+
+exec "$@"
