@@ -1,0 +1,30 @@
+### Intellij ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+
+*.iml
+
+## Directory-based project format:
+./**/.idea/
+# if you remove the above rule, at least ignore the following:
+
+# User-specific stuff:
+# ./**/.idea/workspace.xml
+# ./**/.idea/tasks.xml
+# ./**/.idea/dictionaries
+
+## File-based project format:
+*.ipr
+*.iws
+
+## Plugin-specific files:
+
+# mpeltonen/sbt-idea plugin
+./**/.idea_modules/
+
+### Node ###
+# Logs
+./**/logs
+*.log
+
+# Dependency directory
+./**/node_modules
