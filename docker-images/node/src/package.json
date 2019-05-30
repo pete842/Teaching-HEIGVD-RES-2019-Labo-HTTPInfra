@@ -1,5 +1,5 @@
 {
-  "name": "src",
+  "name": "res-expressjs",
   "version": "1.0.0",
   "dependencies": {
     "chance": "^1.0.18",
