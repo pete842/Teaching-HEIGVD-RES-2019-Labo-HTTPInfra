@@ -11,7 +11,7 @@ function generateJSON() {
   for (let i = 0; i < size; i += 1) {
     companies.push({
       name: chance.company(),
-      street: `${chance.street_suffix().name} ${chance.street()} ${chance.integer({ min: 1, max: 50 })}`,
+      street: `${chance.street()} ${chance.integer({ min: 1, max: 50 })}`,
       city: chance.city(),
       country: chance.country(),
     });
