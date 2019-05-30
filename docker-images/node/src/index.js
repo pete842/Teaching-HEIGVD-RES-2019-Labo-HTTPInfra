@@ -1,8 +1,13 @@
 const Chance = require('chance');
 const express = require('express');
+const fs = require('fs');
 
 const chance = new Chance();
 const app = express();
+
+
+const docker_name = fs.readFileSync('/etc/hostname', 'utf8');
+let number = 1;
 
 function generateJSON() {
   const size = chance.integer({ min: 1, max: 10 });
@@ -21,6 +26,8 @@ function generateJSON() {
 }
 
 app.get('/', (req, res) => {
+  console.log(`${docker_name} received a request #${number}`);
+  number += 1;
   res.send(generateJSON());
 });
 
