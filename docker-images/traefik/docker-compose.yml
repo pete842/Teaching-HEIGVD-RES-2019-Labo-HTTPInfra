@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik # The official Traefik docker image
+    command: --api --docker # Enables the web UI and tells Traefik to listen to docker
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - ./traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+  static:
+    build:
+      context: ../php
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=static"
+      - "traefik.frontend.rule=Host:dashboard.res.ch"
+      - "traefik.port=80"
+  dyn:
+    build:
+      context: ../node
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=dynamic"
+      - "traefik.frontend.rule=Host:dashboard.res.ch;PathStrip:/api/students"
+      - "traefik.port=3000"
+
