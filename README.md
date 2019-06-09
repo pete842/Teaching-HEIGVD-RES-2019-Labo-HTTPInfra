@@ -20,15 +20,15 @@ Le script `run.sh` s'occupe de fournir cette séquence de démarrage.
 La configuration `apache` utilise les modules `proxy` et `http_proxy`, ces modules servent à définir les deux règles permettant d'envoyer le paquet au bon destinataire :
 
 ```apache-conf
-    ProxyPass "/api/students/" "http://172.17.0.3:3000/"
-    ProxyPassReverse "/api/students/" "http://172.17.0.3:3000/"
+    ProxyPass "/api/companies/" "http://172.17.0.3:3000/"
+    ProxyPassReverse "/api/companies/" "http://172.17.0.3:3000/"
 
     ProxyPass "/" "http://172.17.0.2:80/"
     ProxyPassReverse "/" "http://172.17.0.2:80/"
 ```
 
 Le script `add_hosts.sh` permet d'ajouter la règle pour accéder avec une URL plus classique, ce script doit être exécuter en `root`.
-Le serveur statique est atteignable à l'adresse `dashboard.res.ch:8080/` et le serveur dynamique est atteignable à l'adresse `dashboard.res.ch:8080/api/students`.
+Le serveur statique est atteignable à l'adresse `dashboard.res.ch:8080/` et le serveur dynamique est atteignable à l'adresse `dashboard.res.ch:8080/api/companies`.
 
 ## Step 4: AJAX requests with JQuery
 
@@ -62,8 +62,8 @@ La configuration est statique donc l'ordre de démarrage des containers est impo
         BalancerMember "http://172.17.0.5:3000"
     </Proxy>
     
-    ProxyPass "/api/students/" "balancer://dynamic/"
-    ProxyPassReverse "/api/students/" "balancer://dynamic/"
+    ProxyPass "/api/companies/" "balancer://dynamic/"
+    ProxyPassReverse "/api/companies/" "balancer://dynamic/"
 
     <Proxy "balancer://static">
         BalancerMember "http://172.17.0.2:80"
@@ -136,7 +136,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.backend=dynamic"
-      - "traefik.frontend.rule=Host:dashboard.res.ch;PathStrip:/api/students"
+      - "traefik.frontend.rule=Host:dashboard.res.ch;PathStrip:/api/companies"
       - "traefik.port=3000"
 ```
 
