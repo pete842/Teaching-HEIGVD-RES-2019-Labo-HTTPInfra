@@ -40,6 +40,16 @@ Le serveur statique est atteignable à l'adresse `dashboard.res.ch:8080/` et le 
 
 ## Step 4: AJAX requests with JQuery
 
+Pour cette étape, nous avons fait le choix de représenter les données contenues dans le JSON construit par le serveur express.js sous forme de tableau dans notre dashboard de démonstration.
+Une fonction chargée de générer une requête auprès dudit serveur est appelée chaque seconde (à l'aide de la fonction javascript `setInterval`).
+Il est ensuite possible d'activer ou de désactiver se rafraîchissement à sa convenance.
+Un bouton permet également le rafraîchissement manuelle des données.
+
+Ces données sont donc collectées sur la route `/api/companies/` du serveur PHP, qui est en réalité le point de chute du reverse proxy de la route `/` du serveur express.js. 
+Sans cette étape, et donc si l'on tentait de générer une requête ajax pour sur un serveur différent, nous serions bloqués par le navigateur selon les politiques de CORS.
+Le reverse proxy résout ce problème en permettant d'utiliser une route sous-jacente au serveur courant (PHP) pour atteindre le serveur express.js.
+
+
 ## Step 5: Dynamic reverse proxy configuration
 
 Dans le dossier `dyn-reverse-proxy` se trouve l'ensemble des documents nécessaires pour cette étape.
