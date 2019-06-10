@@ -6,15 +6,23 @@
 
 Dans le dossier `php` se trouve l'ensemble des documents nécessaires pour cette étape.
 Dans le dossier `src` se trouve le template `bootstrap` que nous avons utilisé pour cette étape, il a déjà été modifié pour communiquer avec le serveur dynamique.
-Il n'y a aucune configuration spécifique pour qu’apache puisse retourné le template qui est déposé dans `/var/www/html`.
+Il n'y a aucune configuration spécifique pour qu’apache puisse retourner le template qui est déposé dans `/var/www/html`.
 Les différents scripts permettent de travailler avec le docker et le site est accessible par un `forward` de port en `8080`.
 
 ## Step 2: Dynamic HTTP server with express.js
 
+Le dossier `node` contient les sources du serveur HTTP dynamique réalisé à l'aide du framework express.js, le `Dockerfile` permettant de construire une image de ce serveur et enfin deux scripts facilitant le lancement (`run.sh`) et l'arrêt (`stop.sh`) du container associé.
+Ce serveur se contente d'écouter les requêtes sur le port 3000 et de définir une seule route `GET` à sa racine se chargeant de retourner un JSON contenant des informations basiques sur une à dix compagnies fictives.
+
+Seul trois modules node sont utilisé pour ce serveur :
+- `chance`, pour la génération des données fictives de compagnie.
+- `express`, pour l'implémentation du serveur à proprement parler.
+- `fs`, pour lire le contenu du fichier `/etc/hostname` afin de permettre aux messages journalisés d'indiquer leur provenance. 
+
 ## Step 3: Reverse proxy with apache (static configuration)
 
 Dans le dossier `reverse-proxy` se trouve l'ensemble des documents nécessaires pour cette étape.
-Dans le fichier `001-reverse-proxy.conf` contient la configuration de `apache` pour fournir un `reverse proxy`, cette configuration est statique et les adresses ont été choisi pour une séquence de démarrage des services précises.
+Dans le fichier `001-reverse-proxy.conf` contient la configuration de `apache` pour fournir un `reverse proxy`, cette configuration est statique et les adresses ont été choisi pour une séquence précise de démarrage des services.
 Le script `run.sh` s'occupe de fournir cette séquence de démarrage.
 
 La configuration `apache` utilise les modules `proxy` et `http_proxy`, ces modules servent à définir les deux règles permettant d'envoyer le paquet au bon destinataire :
@@ -27,7 +35,7 @@ La configuration `apache` utilise les modules `proxy` et `http_proxy`, ces modul
     ProxyPassReverse "/" "http://172.17.0.2:80/"
 ```
 
-Le script `add_hosts.sh` permet d'ajouter la règle pour accéder avec une URL plus classique, ce script doit être exécuter en `root`.
+Le script `add_hosts.sh` permet d'ajouter la règle pour accéder avec une URL plus classique, ce script doit être exécuté en `root`.
 Le serveur statique est atteignable à l'adresse `dashboard.res.ch:8080/` et le serveur dynamique est atteignable à l'adresse `dashboard.res.ch:8080/api/companies`.
 
 ## Step 4: AJAX requests with JQuery
@@ -39,7 +47,7 @@ Dans le fichier `001-reverse-proxy.conf` contient la configuration de `apache` p
 La configuration est identique à l'étape 3, la seule différence est que le script `docker-php-entrypoint` a été modifié pour configurer le fichier avec les deux variables envoyées au docker.
 
 Le script `run.sh` s'occupe de lancer les containers, de récupérer les IP nécessaires et de fournir ces IP en variable d'environnement au container du `reverse proxy`.
-La configuration des URL est identique à l'étape 3 et le script `add_hosts.sh` aussi, il n’est donc pas nécessaire de le reéxcuter.
+La configuration des URL est identique à l'étape 3 et le script `add_hosts.sh` aussi, il n’est donc pas nécessaire de l'exécuter à nouveau.
 
 ## Additional steps to get extra points on top of the "base" grade
 
@@ -79,14 +87,14 @@ La configuration est statique donc l'ordre de démarrage des containers est impo
 Cette configuration définie deux zones de `load balancing`, l'une pour les deux adresses des services dynamiques et l'autre pour les deux services statiques.
 Le script `run.sh` lance l'infrastructure et le script `scan.sh` permet d'afficher les logs de l'ensemble des containers.
 
-Pour tester le bon fonctionnement, nous pouvons commencer par ouvrir le site statique qui effectuera des requêtes dynamiques de manières récurrentes.
-Après un certain temps, on peut vérifier le bon fonctionnement du `load balancing` avec le script `scan.sh`, on doit voir que le nombre de requêtes entre les deux serveurs dynamiques n'avoir de différent que de `1`au maximum.
+Pour tester le bon fonctionnement, nous pouvons commencer par ouvrir le site statique qui effectuera des requêtes dynamiques de manière récurrente.
+Après un certain temps, on peut vérifier le bon fonctionnement du `load balancing` avec le script `scan.sh`, on doit voir que le nombre de requêtes entre les deux serveurs dynamiques n'avoir de différent que de `1` au maximum.
 Puis on peut effectuer un `reload` du site et vérifier avec `scan.sh` que c'est bien le second serveur statique qui traite la requête.
 
 ### Load balancing: round-robin vs sticky sessions (0.5 pt)
 
 Dans le dossier `reverse-proxy-load-balancing-sticky` se trouve l'ensemble des documents nécessaires pour cette étape.
-La configuration présente dans le fichier `001-reverse-proxy.conf` est quasi identique à l'étape précédente, mais utilise les modules supplémentaires `headers` pour configurer la partie statique avec un système de `sticky session` pour forcé l'utilisation d'un serveur en particulier choisi lorsque le client se connecte la première fois.
+La configuration présente dans le fichier `001-reverse-proxy.conf` est quasi identique à l'étape précédente, mais utilise les modules supplémentaires `headers` pour configurer la partie statique avec un système de `sticky session` pour forcer l'utilisation d'un serveur en particulier choisi lorsque le client se connecte la première fois.
 
 ```apache-conf
     Header add Set-Cookie "ROUTEID=.%{BALANCER_WORKER_ROUTE}e; path=/" env=BALANCER_ROUTE_CHANGED
@@ -97,8 +105,8 @@ La configuration présente dans le fichier `001-reverse-proxy.conf` est quasi id
     </Proxy>
 ```
 
-Cette configuration définit un cookie pour le client définissant à quel serveur il doit être redirigé à chaque connexion choisi à sa première connexion.
-Pour vérifié que le système fonctionne bien la procédure est identique à la dernière étape, le seul changement doit être visible après le `reload` de la page web, ce doit être le même serveur `statique` qui doit répondre à la demande.
+Cette configuration définit un cookie pour le client définissant vers quel serveur il doit être redirigé à chaque connexion choisie à sa première connexion.
+Pour vérifier que le système fonctionne bien la procédure est identique à la dernière étape, le seul changement doit être visible après le `reload` de la page web, ce doit être le même serveur `statique` qui doit répondre à la demande.
 
 ### Dynamic cluster management (0.5 pt)
 
